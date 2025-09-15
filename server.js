@@ -64,6 +64,7 @@ class LinkedInSearchAutomation {
       ],
       ...(isProduction && {
         executablePath: "/usr/bin/google-chrome-stable",
+        ignoreDefaultArgs: ["--disable-extensions"],
       }),
     });
 
