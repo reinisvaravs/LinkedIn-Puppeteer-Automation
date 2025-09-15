@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: linkedin-automation
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LINKEDIN_EMAIL
+        sync: false
+      - key: LINKEDIN_PASSWORD
+        sync: false
+
+  - type: cron
+    name: linkedin-automation-scheduler
+    env: node
+    plan: free
+    schedule: "0 9 * * *" # Run daily at 9 AM UTC
+    buildCommand: npm install
+    startCommand: npm run cron
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LINKEDIN_EMAIL
+        sync: false
+      - key: LINKEDIN_PASSWORD
+        sync: false

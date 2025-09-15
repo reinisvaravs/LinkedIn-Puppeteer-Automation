@@ -7,6 +7,9 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# Cookies and session data
+cookies.json
+
 # Logs
 logs
 *.log

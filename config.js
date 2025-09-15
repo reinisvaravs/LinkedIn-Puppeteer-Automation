@@ -3,7 +3,7 @@
 export default {
   // Browser settings
   browser: {
-    headless: false, // Set to true for cloud deployment
+    headless: process.env.NODE_ENV === "production" ? true : false, // Auto-detect cloud deployment
     slowMo: 1000, // Delay between actions (milliseconds)
     defaultViewport: null,
     args: [
@@ -15,6 +15,9 @@ export default {
       "--no-first-run",
       "--no-zygote",
       "--disable-gpu",
+      "--disable-web-security",
+      "--disable-features=VizDisplayCompositor",
+      "--single-process", // Required for some cloud environments
     ],
   },
 

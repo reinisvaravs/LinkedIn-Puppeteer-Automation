@@ -1,20 +1,14 @@
 {
   "name": "crm-automation",
   "version": "1.0.0",
-  "description": "Browser automation for CRM form filling without API",
+  "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node test-linkedin.js",
-    "login": "node linkedin-login.js"
+    "start": "node server.js",
+    "cron": "node server.js --cron",
+    "dev": "NODE_ENV=development node server.js"
   },
-  "keywords": [
-    "automation",
-    "puppeteer",
-    "crm",
-    "browser"
-  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
