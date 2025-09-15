@@ -39,11 +39,12 @@ class LinkedInSearchAutomation {
   async launchBrowser() {
     console.log("🚀 Launching browser...");
 
+    const isProduction = process.env.NODE_ENV === "production";
+
     this.browser = await puppeteer.launch({
-      headless: false,
+      headless: isProduction ? "new" : false,
       defaultViewport: null,
       args: [
-        "--start-maximized",
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -52,8 +53,18 @@ class LinkedInSearchAutomation {
         "--no-first-run",
         "--disable-default-apps",
         "--disable-extensions",
-        "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--single-process",
+        "--no-zygote",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding",
+        "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       ],
+      ...(isProduction && {
+        executablePath: "/usr/bin/google-chrome-stable",
+      }),
     });
 
     this.page = await this.browser.newPage();
@@ -153,11 +164,6 @@ class LinkedInSearchAutomation {
     await this.randomDelay(1500, 3000);
 
     // Submit login
-    await this.page.screenshot({
-      path: "screenshots/linkedin-search-login.png",
-      fullPage: true,
-    });
-
     await this.page.click('button[type="submit"]');
     await this.randomDelay(2000, 4000);
 
@@ -208,12 +214,6 @@ class LinkedInSearchAutomation {
 
     console.log("⏳ Waiting for search results...");
     await this.randomDelay(3000, 5000);
-
-    // Take screenshot of search results
-    await this.page.screenshot({
-      path: "screenshots/linkedin-search-results.png",
-      fullPage: true,
-    });
 
     console.log("✅ Search completed!");
   }
@@ -340,14 +340,6 @@ class LinkedInSearchAutomation {
     return names;
   }
 
-  async takeScreenshot(filename) {
-    await this.page.screenshot({
-      path: `screenshots/${filename}`,
-      fullPage: true,
-    });
-    console.log(`📸 Screenshot saved: ${filename}`);
-  }
-
   async close() {
     if (this.browser) {
       await this.browser.close();
@@ -382,7 +374,6 @@ class LinkedInSearchAutomation {
       return names;
     } catch (error) {
       console.error("❌ Error during search:", error.message);
-      await this.takeScreenshot("linkedin-search-error.png");
       return [];
     } finally {
       await this.close();
