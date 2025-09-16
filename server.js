@@ -72,6 +72,9 @@ class LinkedInSearchAutomation {
     });
 
     this.page = await this.browser.newPage();
+    // Safer defaults for headless/cloud
+    this.page.setDefaultTimeout(25000);
+    this.page.setDefaultNavigationTimeout(45000);
 
     // Set realistic viewport
     await this.page.setViewport({ width: 1366, height: 768 });
@@ -84,6 +87,25 @@ class LinkedInSearchAutomation {
     await this.page.setUserAgent(userAgent);
 
     console.log("✅ Browser launched!");
+  }
+
+  async dismissCookieBanner() {
+    const selectors = [
+      'button[aria-label="Accept cookies"]',
+      'button:has-text("Accept cookies")',
+      "button[data-test-global-alert-accept]",
+    ];
+    for (const sel of selectors) {
+      try {
+        const btn = await this.page.$(sel);
+        if (btn) {
+          await btn.click();
+          await this.randomDelay(500, 1200);
+          return true;
+        }
+      } catch (_) {}
+    }
+    return false;
   }
 
   async saveCookies() {
@@ -151,13 +173,17 @@ class LinkedInSearchAutomation {
     // Navigate to LinkedIn login page
     await this.page.goto(config.linkedin.loginUrl, {
       waitUntil: "domcontentloaded",
-      timeout: 15000,
+      timeout: 30000,
     });
 
-    await this.randomDelay(1000, 2000);
+    await this.randomDelay(1200, 2200);
+    // Try to dismiss cookie banner if it appears
+    await this.dismissCookieBanner();
 
+    // Wait for either the email field to be visible or the login form container
     await this.page.waitForSelector('input[name="session_key"]', {
-      timeout: 10000,
+      timeout: 20000,
+      visible: true,
     });
 
     await this.randomDelay(500, 1500);
