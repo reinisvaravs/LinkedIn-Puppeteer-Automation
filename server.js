@@ -41,6 +41,7 @@ class LinkedInSearchAutomation {
 
     const isProduction = process.env.NODE_ENV === "production";
 
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
     this.browser = await puppeteer.launch({
       headless: isProduction ? "new" : false,
       defaultViewport: null,
@@ -62,10 +63,12 @@ class LinkedInSearchAutomation {
         "--disable-renderer-backgrounding",
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       ],
-      // Use Puppeteer's bundled Chrome in production
-      ...(isProduction && {
-        ignoreDefaultArgs: ["--disable-extensions"],
-      }),
+      // Prefer explicit executable if provided (Docker/Render)
+      ...(executablePath
+        ? { executablePath, ignoreDefaultArgs: ["--disable-extensions"] }
+        : isProduction
+        ? { ignoreDefaultArgs: ["--disable-extensions"] }
+        : {}),
     });
 
     this.page = await this.browser.newPage();

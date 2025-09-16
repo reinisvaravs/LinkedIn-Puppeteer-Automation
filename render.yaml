@@ -1,10 +1,9 @@
 services:
   - type: web
     name: linkedin-automation
-    env: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
